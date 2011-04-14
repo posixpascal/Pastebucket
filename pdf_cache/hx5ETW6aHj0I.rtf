@@ -1,0 +1,96 @@
+{\rtf1\ansi\deff0{\fonttbl{\f0\fmodern\fprq1\fcharset0;}}{\colortbl;\red128\green128\blue128;\red186\green33\blue33;\red0\green64\blue208;\red102\green102\blue102;\red64\green128\blue128;\red160\green160\blue0;\red25\green23\blue124;\red0\green128\blue0;\red187\green102\blue136;\red187\green102\blue34;\red136\green0\blue0;\red170\green34\blue255;\red153\green153\blue153;\red0\green160\blue0;\red160\green0\blue0;\red255\green0\blue0;\red128\green0\blue128;\red176\green0\blue64;\red0\green0\blue255;\red187\green187\blue187;\red188\green122\blue0;\red0\green0\blue128;\red125\green144\blue41;\red210\green65\blue58;}\f0{\cf5\i # Python Pastebucket Webserver}\par
+{\cf5\i # Build on: Flask}\par
+{\cf5\i # Developed on: Mac}\par
+{\cf5\i # Developed using TextMate, Coda, Transmit and Python.}\par
+{\cf5\i # DJango Release is coming soon.}\par
+\par
+{\cf8\b import} {\cf19\b sqlite3}\par
+{\cf8\b import} {\cf19\b datetime}\par
+{\cf8\b import} {\cf19\b random}\par
+{\cf8\b import} {\cf19\b string}\par
+\par
+{\cf8\b from} {\cf19\b flask} {\cf8\b import} Flask\par
+{\cf8\b from} {\cf19\b flask} {\cf8\b import} render_template\par
+{\cf8\b from} {\cf19\b flask} {\cf8\b import} g\par
+{\cf8\b from} {\cf19\b flask} {\cf8\b import} session\par
+{\cf8\b from} {\cf19\b flask} {\cf8\b import} url_for\par
+{\cf8\b from} {\cf19\b flask} {\cf8\b import} request\par
+{\cf8\b from} {\cf19\b flask} {\cf8\b import} abort\par
+{\cf8\b from} {\cf19\b flask} {\cf8\b import} flash\par
+{\cf8\b from} {\cf19\b flask} {\cf8\b import} redirect\par
+{\cf8\b from} {\cf19\b utils} {\cf8\b import} FormParser\par
+{\cf8\b from} {\cf19\b contextlib} {\cf8\b import} closing\par
+\par
+{\cf5\i # Configuration}\par
+DATABASE {\cf4 =} {\cf2 "}{\cf2 database.db}{\cf2 "}\par
+SECRET_KEY {\cf4 =} {\cf2 "}{\cf2 193r193h9sf0afa}{\cf2 "}\par
+KEY_RANGE {\cf4 =} [{\cf4 3},{\cf4 15}]\par
+\par
+{\cf8\b def} {\cf19 randomletters}():\par
+	{\cf8\b return} {\cf2 "}{\cf2 "}{\cf4 .}join(random{\cf4 .}sample(string{\cf4 .}letters{\cf4 +}string{\cf4 .}digits, random{\cf4 .}randint(KEY_RANGE[{\cf4 0}],KEY_RANGE[{\cf4 1}])))\par
+	\par
+app {\cf4 =} Flask(__name__)\par
+app{\cf4 .}config{\cf4 .}from_object(__name__)\par
+\par
+{\cf12 @app.route}({\cf2 "}{\cf2 /}{\cf2 "})\par
+{\cf8\b def} {\cf19 index}():\par
+	{\cf8\b return} render_template({\cf2 '}{\cf2 index.html}{\cf2 '})\par
+	\par
+{\cf12 @app.route}({\cf2 "}{\cf2 /paste/create}{\cf2 "})\par
+{\cf8\b def} {\cf19 new}():\par
+	{\cf8\b return} render_template({\cf2 "}{\cf2 new_paste.html}{\cf2 "})	\par
+	\par
+{\cf12 @app.route}({\cf2 "}{\cf2 /paste/view/<id>}{\cf2 "})\par
+{\cf8\b def} {\cf19 paste_view_all}({\cf8 id}):\par
+	data {\cf4 =} query_db({\cf2 "}{\cf2 select * from pastes where id = ?}{\cf2 "}, [{\cf8 id}])\par
+	{\cf8\b return} render_template({\cf2 "}{\cf2 view.html}{\cf2 "}, data{\cf4 =}data[{\cf4 0}])\par
+	\par
+{\cf12 @app.route}({\cf2 "}{\cf2 /paste/add.do}{\cf2 "}, methods{\cf4 =}[{\cf2 "}{\cf2 POST}{\cf2 "}])\par
+{\cf8\b def} {\cf19 new_paste}():\par
+	f {\cf4 =} FormParser{\cf4 .}new(request{\cf4 .}form)\par
+	title {\cf4 =} f{\cf4 .}get({\cf2 '}{\cf2 title}{\cf2 '}, {\cf2 "}{\cf2 Untitled}{\cf2 "})\par
+	paste {\cf4 =} f{\cf4 .}get({\cf2 '}{\cf2 paste}{\cf2 '}, {\cf2 "}{\cf2 "})\par
+	syntax_highlight {\cf4 =} f{\cf4 .}get({\cf2 '}{\cf2 syntax_highlight}{\cf2 '}, {\cf8 None})\par
+	private {\cf4 =} f{\cf4 .}get({\cf2 '}{\cf2 private}{\cf2 '}, {\cf4 0})\par
+	{\cf8\b if} title {\cf4 !=} {\cf8 None} {\cf12\b and} paste {\cf4 !=} {\cf2 "}{\cf2 "} {\cf12\b and} syntax_highlight {\cf4 !=} {\cf8 None} {\cf12\b and} private {\cf4 !=} {\cf8 None}:\par
+		{\cf8 id} {\cf4 =} randomletters()\par
+		{\cf8\b while} query_db({\cf2 '}{\cf2 select * from pastes where id = ?}{\cf2 '}, [{\cf8 id}], one{\cf4 =}{\cf8 True}) {\cf12\b is} {\cf12\b not} {\cf8 None}:\par
+			{\cf8 id} {\cf4 =} randomletters()\par
+		\par
+		g{\cf4 .}db{\cf4 .}execute({\cf2 "}{\cf2 insert into pastes (id, title, text, private, syntaxhighlight, ip, date) values (?,?,?,?,?,?,?)}{\cf2 "}, [{\cf8 id}, title, paste, private, syntax_highlight, request{\cf4 .}environ[{\cf2 "}{\cf2 REMOTE_ADDR}{\cf2 "}], datetime{\cf4 .}datetime{\cf4 .}now(){\cf4 .}strftime({\cf2 "}{\cf9\b %d}{\cf2 .}{\cf2 %}{\cf2 m.}{\cf2 %}{\cf2 Y - }{\cf2 %}{\cf2 H:}{\cf2 %}{\cf2 M}{\cf2 "})])\par
+		g{\cf4 .}db{\cf4 .}commit()\par
+		{\cf8\b return} {\cf2 "}{\cf2 Added}{\cf2 "}\par
+	{\cf8\b else}: {\cf8\b return} {\cf2 "}{\cf2 False}{\cf2 "}\par
+	\par
+	\par
+{\cf5\i # Database PreConfiguration}\par
+{\cf8\b def} {\cf19 connect_db}():\par
+	{\cf8\b return} sqlite3{\cf4 .}connect(app{\cf4 .}config[{\cf2 '}{\cf2 DATABASE}{\cf2 '}])\par
+	\par
+{\cf8\b def} {\cf19 init_db}():\par
+	{\cf8\b with} closing(connect_db()) {\cf8\b as} db:\par
+		{\cf8\b with} app{\cf4 .}open_resource({\cf2 '}{\cf2 database.sql}{\cf2 '}) {\cf8\b as} f:\par
+			db{\cf4 .}cursor(){\cf4 .}executescript(f{\cf4 .}read())\par
+		db{\cf4 .}commit()\par
+\par
+{\cf8\b def} {\cf19 query_db}(query, args{\cf4 =}(), one{\cf4 =}{\cf8 False}):\par
+    cur {\cf4 =} g{\cf4 .}db{\cf4 .}execute(query, args)\par
+    rv {\cf4 =} [{\cf8 dict}((cur{\cf4 .}description[idx][{\cf4 0}], value)\par
+               {\cf8\b for} idx, value {\cf12\b in} {\cf8 enumerate}(row)) {\cf8\b for} row {\cf12\b in} cur{\cf4 .}fetchall()]\par
+    {\cf8\b return} (rv[{\cf4 0}] {\cf8\b if} rv {\cf8\b else} {\cf8 None}) {\cf8\b if} one {\cf8\b else} rv\par
+\par
+{\cf12 @app.before_request}\par
+{\cf8\b def} {\cf19 before_request}():\par
+    g{\cf4 .}db {\cf4 =} connect_db()\par
+\par
+{\cf12 @app.after_request}\par
+{\cf8\b def} {\cf19 after_request}(response):\par
+    g{\cf4 .}db{\cf4 .}close()\par
+    {\cf8\b return} response\par
+\par
+\par
+			\par
+{\cf8\b if} __name__ {\cf4 ==} {\cf2 "}{\cf2 __main__}{\cf2 "}:\par
+	app{\cf4 .}secret_key {\cf4 =} {\cf2 "}{\cf2 ]*}{\cf10\b \\xb5}{\cf10\b \\x8f}{\cf10\b \\x1e}{\cf10\b \\xe8}{\cf10\b \\x05}{\cf2 N}{\cf10\b \\xd2}{\cf10\b \\xa3}{\cf10\b \\xaf}{\cf10\b \\x94}{\cf10\b \\x98}{\cf2 h}{\cf10\b \\x01}{\cf2 M}{\cf2 "}\par
+	app{\cf4 .}run(debug{\cf4 =}{\cf8 True})\par
+}

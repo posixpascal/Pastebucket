@@ -1,0 +1,107 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+	"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html>
+<head>
+	<meta http-equiv="Content-type" content="text/html; charset=utf-8">
+	<title>{% block title %}Pastebucket{% endblock %}</title>
+	<script src="{{ url_for('static', filename='js/jquery.js') }}" type="text/javascript" charset="utf-8"></script>
+	<script src="{{ url_for('static', filename='js/jquery-ui-1.8.11.custom.min.js')}}" type="text/javascript"></script>
+
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/Aristo/jquery-ui-1.8.7.custom.css')}}" type="text/css" media="screen" title="no title" charset="utf-8">
+	<script type="text/javascript" charset="utf-8">
+	
+		$(function(){ 
+			$(".button").button();
+			
+		});
+	</script>
+	<script type="text/javascript">
+	function sleep(milliseconds) {
+	  var start = new Date().getTime();
+	  for (var i = 0; i < 1e7; i++) {
+	    if ((new Date().getTime() - start) > milliseconds){
+	      break;
+	    }
+	  }
+	}
+		function search(keyword, page){ 
+			if (!page) { var page = 0;}
+			$("#results").html('<img src="{{ url_for("static", filename="images/loading.gif") }}"> L&auml;dt bis zu 3 Treffer..');
+			
+			var s = $("#suche").val();
+			$.ajax({
+			type: 'POST',
+			data: {'q':s,'page':page},
+			url: '/ajax/search',
+			
+			success: function(data){
+				$("suchdialog").dialog("option","height",800);
+				$('#results').html(data);
+				$("#next").click(function(){
+					var page = parseInt($("#pageid").val()) + 1;
+					search('',page);
+				});
+				$("#back").click(function(){
+					var page = parseInt($("#pageid").val()) - 1;
+					search('',page);
+				});
+			}
+		});
+	}
+	</script>
+	<script>
+		$(function() {
+			$("#suchdialog").dialog({ autoOpen: false, width:410, height:'auto',dialogClass:'alert', position:'top', show:'blind' });
+			
+			$("#searchbox").click(function(){
+			$("#suchdialog").dialog('open');
+			$("#suche").keypress(function(event) {
+				if (event.which == '13') {
+					// ajax submit here
+					search('');
+					
+				}
+			});
+			return false;	
+
+			});
+
+		});
+		</script>
+		
+		<link rel="stylesheet" href="{{ url_for('static', filename='css/master.css')}}" type="text/css" media="screen" charset="utf-8" />
+	{% block head %}
+	{% endblock %}
+
+</head>
+<body onload="" style="margin:0;padding:0;">
+<div id="navigation_bar">
+<ul id="navigation_list">
+<li><b style="margin-left:30px;color:#fff;font-size:12px;">pastebucket.de</b></li>
+<li><b style="padding-left:5px;padding-right:5px;">&nbsp;</b></li>
+<li><a href="/">Startseite</a></li>
+<li><a href="/paste/create" id="showpaste">Neuer Paste</a></li>
+<li><a id="searchbox" href="#/search">Suchen</a></li>
+<li><a href="/help">Hilfe</a></li>
+<li><a href="/imprint">Impressum</a></li>
+<li><a href="/api">API</a></li>
+
+</ul>
+</div>	<div id="suchdialog" title="AJAX Suche">
+<p><b>Gebe einen Suchbegriff ein &amp; dr&uuml;cke Enter:</b><br /><br />
+	<input type="text" name="q" style="height:30px;width:380px;" id="suche"><br />
+	<div id="results">
+	</div>
+</p>
+	</div>
+
+		<div id="content" style="margin-left:30px;width:700px;">
+			{% block body %}
+			{% endblock %}
+			</div>
+			<div style="height:40px;">&nbsp;</div>
+		<div id="footer">
+			(c) Copyright 2011 Pascal Raszyk. All Rights Reserved.
+		</div>
+</body>
+</html>

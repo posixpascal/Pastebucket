@@ -1,0 +1,64 @@
+{% extends "basic.html" %}
+{% block head %}
+<script type="text/javascript">
+$(document).ready(function(){
+	$("#pdfdialog").dialog({ autoOpen: false, width:410, height:'auto',dialogClass:'alert', position:'top', show:'blind' });
+	
+$("#pdf_start").click(function(){
+	var id = $("#id").val();
+	$("#pdfdialog").dialog('open');
+	$( "#progressbar" ).progressbar({
+				value: 0
+			});
+			
+		f(id);	
+	// Start Detlef Engine
+	
+	
+});
+	
+	function f(id) {
+			$.ajax({
+			type: 'POST',
+			data: {},
+			url: '/ajax/harald/ask',
+
+			success: function(data){
+				$("#status").html(data);
+				$("#progressbar").progressbar("option", "value", 50);
+			}
+		});
+		$.ajax({
+			type: 'POST',
+			data: {'id':id},
+			url: '/ajax/harald/pdfw',
+			success: function(data){
+				$("#status").html("PDF-Datei wurde erstellt!");
+				$("#progressbar").progressbar("option", "value", 100);
+				$("#status").html("<a href='/static/pdf/{{ pdfk.id }}.pdf'>Download PDF File</a>");
+			}
+		});
+	}
+});
+</script>
+{% endblock %}
+{% block body %}
+<h1>Pastebucket - PDF Konverter</h1>
+<br />
+Der AJAX-PDF Konverter erm&ouml;glicht das Umwandeln von Pastebucket' Pastes in reines PDF.<br />
+Deine PDF-Dateien werden nach 10 Minuten, Aufgrund geringer Festplattenkapazit&auml;t gel&ouml;scht.<br />
+
+<br /><br />
+<b>Paste ID: {{ pdfk.id }}</b><br /><br />
+<input type="hidden" id="id" value="{{ pdfk.id }}" name="id">
+<a href="#pdf.start" id="pdf_start" class="button">Starte Konverter</a>
+
+
+<div id="pdfdialog" title="PDF-Konverter">
+<p><b><p style="margin-left:5px;" id="status"> Starte PDF-Motor 'Detlef'</p></b>
+<div id="progressbar"></div>
+<br /><br />
+
+</p>
+	</div>
+{% endblock %}

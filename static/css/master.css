@@ -1,0 +1,102 @@
+* http://meyerweb.com/eric/tools/css/reset/ 
+   v2.0 | 20110126
+   License: none (public domain)
+*/
+
+html, body, div, span, applet, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+a, abbr, acronym, address, big, cite, code,
+del, dfn, em, img, ins, kbd, q, s, samp,
+small, strike, strong, sub, sup, tt, var,
+b, u, i, center,
+dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td,
+article, aside, canvas, details, embed, 
+figure, figcaption, footer, header, hgroup, 
+menu, nav, output, ruby, section, summary,
+time, mark, audio, video {
+	margin: 0;
+	padding: 0;
+	border: 0;
+	font-size: 100%;
+	font: inherit;
+	vertical-align: baseline;
+}
+/* HTML5 display-role reset for older browsers */
+article, aside, details, figcaption, figure, 
+footer, header, hgroup, menu, nav, section {
+	display: block;
+}
+body {
+	line-height: 1;
+}
+ol, ul {
+	list-style: none;
+}
+blockquote, q {
+	quotes: none;
+}
+blockquote:before, blockquote:after,
+q:before, q:after {
+	content: '';
+	content: none;
+}
+table {
+	border-collapse: collapse;
+	border-spacing: 0;
+}
+/* RESET ENDE */
+body {font-family:Verdana;font-size:69%;background-color:#efefef}
+
+ul { margin:0; padding:0;display:inline;}
+
+#navigation_bar {
+background-color: #5c83b8; height:31px;
+}
+#navigation_bar, x:-moz-any-link, x:only-child { height:32px;}
+#navigation_bar li { display:inline; }
+#navigation_bar li a  { border-right-style: solid; border-left-style: solid; border-left-color: white; border-bottom-color: white; border-right-color: white; border-top-color: white; border-right-width: 0px; border-left-width: 0px; color:#fff; text-decoration:none; padding: 10px; }
+#navigation_bar li a:hover { background-color: #6fa1e2;padding:10px;}
+#navigation_bar li a:active { background-color: #3d5b80;padding:10px;}
+.alert .ui-dialog-titlebar {display:none}
+.alert .ui-widget-shadow .ui-corner-all {display:none;}
+#navigation_list { margin-top:8px;position:absolute}
+#newpaste { background-color:#D6D6D6;height:430px;width:580px;border-left:1px solid white;border-right:1px solid white;border-bottom:1px solid white;z-index:1000;position:absolute;left:25%;}
+
+
+input[type="text"] { width:300px;}
+.info { font-family:"Times New Roman Italic", "Times New Roman", italic;color:#ccc;font-size:16px;}
+.ui-button-text {font-size: 12px !important;}
+ul.auto-complete-list {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    position: fixed;
+    z-index: 1500;
+    max-height: 250px;
+    overflow: auto;
+	
+}
+
+#footer { position:fixed;bottom:0px;width:100%;background-color:#333;font-size:10px;color:#efefef;height:20px;text-align:center;width:100%;vertical-align:middle;padding-top:9px;}
+
+#code {
+	border-radius:5px;
+	background-color: #333;
+
+	color:#efefef;
+	width:800px;
+	font-family:Verdana;
+	font-size:12px;
+	height:400px;
+	opacity: 0.8;
+	-moz-opacity: 0.8;
+	filter:alpha(opacity=80);
+	padding:10px;
+	overflow: auto;
+}
+
+
+
+.smatch { background-color:#CDEB8B;padding:10px;}

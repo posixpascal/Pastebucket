@@ -1,0 +1,19 @@
+{% extends "basic.html" %}
+{% block head %}
+<style type="text/css">
+{{ HtmlFormatter().get_style_defs('.highlight') }}
+.highlight .hll { background-color: #ffffcc }
+.highlight  { background: transparent; }
+</style>
+{% endblock %}
+{% block body %}
+<h1>{{ data.title }}</h1>
+<small>Published on {{ data.date }} by Guest</small>
+<br />
+<br />
+<div id="code">
+	{{ highlight.replace("\n","<br/>")|safe }}
+</div>
+<br/>
+<a href="/paste/raw/{{ data.id }}.txt" class="button">RAW</a> <a class="button" href="/paste/rtf/{{ data.id }}.rtf">In RTF umwandeln</a> <a href="/paste/img/{{ data.id }}.png" class="button">In Bild umwandeln</a> <a href="/ajax/pdf;{{ data.id }}" class="button">In PDF umwandeln</a>
+{% endblock %}

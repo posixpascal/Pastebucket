@@ -1,0 +1,54 @@
+{% extends "basic.html" %}
+{% block head %}
+<script type="text/javascript" charset="utf-8">
+	function toggleTitleBar(){
+		if ($("#text_toggle").attr('checked')) {
+			$("#title").removeAttr("disabled");
+		}
+		else {
+			$("#title").attr('disabled', 'true');
+		}
+	}
+</script>
+<script>
+	$(function() {
+		$("#dialog").dialog({ autoOpen: false, width:500, height:300 });
+		$("#addtags").button().click(function(){
+		$("#dialog").dialog('open');
+		return false;	
+			
+		});
+
+	});
+	</script>
+
+{% endblock %}
+{% block body %}
+<h1>Neuer Paste</h1>
+<form action="/paste/add.do" id="pasteform" method="post">
+	<div style="width:800px;">
+	<input id="text_toggle" type="checkbox" unchecked onclick="toggleTitleBar();"> <input name="title" id="title" type="text" disabled style="width:678px;" value="Unbetitelt.">
+<br />
+
+	<textarea name="paste" style="width:700px;height:300px;"></textarea>
+	<br /><br />
+	<a class="button" href="#" onclick="document.forms['pasteform'].submit();">Paste</a>  <b> or </b> <a id="addtags" href="#addTags" onclick="addTags();">Add Tags</a>
+	<div id="dialog" title="Tag-Editor">
+<p><b>Gebe einige Tags ein die dein Snippet beschreiben:</b><br /><br />
+	<input type="text" name="tags" style="width:300px;" id="tageditor"><br /><br />
+	<br />
+	Schliesse den Tag-Editor nachdem du die Tags hinzugef&uuml;gt hast.
+	<br />
+	Die Tags lassen deinen Paste leichter suchen.
+</p>
+	</div>
+	
+	<select name="syntax_highlight" style="width:150px;margin-left:5px;">
+		<option value="python">Python</option>
+		<option value="ruby">Ruby</option>
+		
+	</select>&nbsp; <span style="margin-left:4px;"><input type="checkbox" name="private" value="1"><img src="{{ url_for('static', filename='icons/lock.png') }}" style="position:absolute; margin-top:2px;"/></span><br/>
+	</div>
+	
+</form>
+{% endblock %}
